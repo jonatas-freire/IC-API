@@ -1,0 +1,38 @@
+version: "3.7"
+
+services: 
+
+  ic-api:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - 3333:3333
+    command: yarn dev
+    volumes:
+      - .:/usr/src/app
+
+  ic-database:
+    image: mysql:5.7
+    volumes:
+      - /var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "DB_IC"
+    ports:
+      - 3306:3306
+    networks:
+      - ic-network
+  php-my-admin:
+    image: phpmyadmin/phpmyadmin
+    environment: 
+      PMA_ARBITRARY : 1
+    ports:
+      - 8080:80
+    networks:
+      - ic-network
+    depends_on:
+      - ic-database
+
+networks:
+  ic-network:
